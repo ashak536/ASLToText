@@ -44,6 +44,7 @@
         overflow: hidden;
         aspect-ratio: 16 / 9;
         background: #111;
+        border-radius: 6px;
       }
 
       video,
@@ -64,6 +65,48 @@
         color: white;
         background: rgb(0 0 0 / 65%);
         font-size: 0.85rem;
+        border-radius: 4px;
+        z-index: 2;
+        pointer-events: none;
+      }
+
+      /* Detected letter overlay (bottom-right of camera view) */
+      #detectedLetter {
+        position: absolute;
+        bottom: 16px;
+        right: 16px;
+        color: white;
+        text-align: center;
+        pointer-events: none;
+        z-index: 2;
+        text-shadow: 0 2px 8px rgb(0 0 0 / 70%);
+      }
+
+      #detectedLetter .letter {
+        font-size: 4rem;
+        font-weight: bold;
+        line-height: 1;
+      }
+
+      #detectedLetter .confidence {
+        font-size: 1rem;
+        opacity: 0.85;
+      }
+
+      /* Dwell progress bar */
+      .dwell-bar-container {
+        width: 100%;
+        height: 6px;
+        background: #ddd;
+        border-radius: 0 0 6px 6px;
+        overflow: hidden;
+      }
+
+      #dwellBar {
+        width: 0%;
+        height: 100%;
+        background: linear-gradient(90deg, #1683a5, #22c55e);
+        transition: width 0.08s linear;
       }
 
       .controls,
@@ -77,6 +120,14 @@
 
       .camera-controls {
         margin: 10px 0 16px;
+      }
+
+      .text-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
       }
 
       textarea {
@@ -93,8 +144,26 @@
         margin-top: 18px;
       }
 
+      details summary {
+        cursor: pointer;
+        font-weight: bold;
+        padding: 6px 0;
+      }
+
+      .data-panel {
+        margin-top: 10px;
+        padding: 12px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+      }
+
       #counts {
         margin-top: 8px;
+        font-size: 0.9rem;
+        color: #555;
+        max-height: 120px;
+        overflow-y: auto;
       }
 
       @media (max-width: 480px) {
@@ -111,6 +180,16 @@
       <div class="camera" aria-label="Webcam preview">
         <video id="video" autoplay playsinline muted></video>
         <canvas id="overlay"></canvas>
+        <div id="status">Initializing&hellip;</div>
+        <div id="detectedLetter" style="display: none">
+          <div class="letter" id="letterDisplay"></div>
+          <div class="confidence" id="confidenceDisplay"></div>
+        </div>
+      </div>
+
+      <!-- Dwell progress bar directly below camera -->
+      <div class="dwell-bar-container">
+        <div id="dwellBar"></div>
       </div>
 
       <div class="camera-controls">
@@ -124,6 +203,55 @@
         aria-live="polite"
         placeholder="Letters will appear here..."
       ></textarea>
+
+      <!-- Text controls row -->
+      <div class="text-controls">
+        <button id="btnClearText" type="button">Clear text</button>
+        <button id="btnAddSpace" type="button">Add space</button>
+        <button id="btnBackspace" type="button">Backspace</button>
+      </div>
+
+      <!-- Data collection panel -->
+      <details>
+        <summary>Training Data Collection</summary>
+        <div class="data-panel">
+          <div class="data-controls">
+            <label for="letterSelect">Letter:</label>
+            <select id="letterSelect">
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="G">G</option>
+              <option value="H">H</option>
+              <option value="I">I</option>
+              <option value="J">J</option>
+              <option value="K">K</option>
+              <option value="L">L</option>
+              <option value="M">M</option>
+              <option value="N">N</option>
+              <option value="O">O</option>
+              <option value="P">P</option>
+              <option value="Q">Q</option>
+              <option value="R">R</option>
+              <option value="S">S</option>
+              <option value="T">T</option>
+              <option value="U">U</option>
+              <option value="V">V</option>
+              <option value="W">W</option>
+              <option value="X">X</option>
+              <option value="Y">Y</option>
+              <option value="Z">Z</option>
+            </select>
+            <button id="btnRecord" type="button">Record samples</button>
+            <button id="btnExport" type="button">Export CSV</button>
+            <button id="btnClearData" type="button">Clear data</button>
+          </div>
+          <div id="counts">No samples collected yet.</div>
+        </div>
+      </details>
 
     </main>
     <script type="module" src="js/app.js"></script>
